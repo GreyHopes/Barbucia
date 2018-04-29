@@ -9,6 +9,9 @@ namespace Barbucia
     /// </summary>
     public class Game1 : Game
     {
+        Texture2D textureCarte;
+        Rectangle PosCarte;
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
@@ -27,6 +30,12 @@ namespace Barbucia
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            this.IsMouseVisible = true;
+
+            //Rectange position de la carte
+            int posX = GraphicsDevice.Viewport.Width / 2 - 200;
+            int posY = GraphicsDevice.Viewport.Height / 2 - 200;
+            Rectangle posCarte = new Rectangle(posX, posY, 400, 400);
 
             base.Initialize();
         }
@@ -39,7 +48,7 @@ namespace Barbucia
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
+            textureCarte = Content.Load<Texture2D>("Conseiller");
             // TODO: use this.Content to load your game content here
         }
 
@@ -67,6 +76,21 @@ namespace Barbucia
             base.Update(gameTime);
         }
 
+        protected  void RotateCarte()
+        {
+            Vector2 v1 = new Vector2(PosCarte.X, PosCarte.Y);
+            Vector2 v2 = new Vector2(PosCarte.X + PosCarte.Width,PosCarte.Y);
+            Vector2 v3 = new Vector2(PosCarte.X, PosCarte.Y + PosCarte.Height);
+            Vector2 v4 = new Vector2(PosCarte.X + PosCarte.Width, PosCarte.Y + PosCarte.Height);
+
+            v1 = Vector2.Transform(v1, Matrix.CreateRotationZ(MathHelper.ToRadians(30)));
+            v2 = Vector2.Transform(v2, Matrix.CreateRotationZ(MathHelper.ToRadians(30)));
+            v3 = Vector2.Transform(v3, Matrix.CreateRotationZ(MathHelper.ToRadians(30)));
+            v4 = Vector2.Transform(v4, Matrix.CreateRotationZ(MathHelper.ToRadians(30)));
+
+            PosCarte = new Rectangle(v1, v2, v3, v4);
+        }
+
         /// <summary>
         /// This is called when the game should draw itself.
         /// </summary>
@@ -74,6 +98,11 @@ namespace Barbucia
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+
+            spriteBatch.Begin();
+            
+            spriteBatch.Draw(textureCarte,PosCarte, Color.White);
+            spriteBatch.End();
 
             // TODO: Add your drawing code here
 
