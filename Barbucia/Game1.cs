@@ -10,7 +10,11 @@ namespace Barbucia
     public class Game1 : Game
     {
         Texture2D textureCarte;
-        Rectangle PosCarte;
+        Rectangle posCarte;
+
+        Vector2 spritePosition;
+        Vector2 spriteOrigin;
+        float angle;
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -18,6 +22,8 @@ namespace Barbucia
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
+            Window.AllowUserResizing = true;
+            //graphics.IsFullScreen = true;
             Content.RootDirectory = "Content";
         }
 
@@ -33,10 +39,13 @@ namespace Barbucia
             this.IsMouseVisible = true;
 
             //Rectange position de la carte
-            int posX = GraphicsDevice.Viewport.Width / 2 - 200;
-            int posY = GraphicsDevice.Viewport.Height / 2 - 200;
-            Rectangle posCarte = new Rectangle(posX, posY, 400, 400);
+            int posX = GraphicsDevice.Viewport.Width / 2 - 100;
+            int posY = GraphicsDevice.Viewport.Height / 2 - 100;
+            posCarte = new Rectangle(posX, posY, 200, 200);
 
+            angle = 0;
+
+            spritePosition = new Vector2(posX+100, posY+100);
             base.Initialize();
         }
 
@@ -70,26 +79,16 @@ namespace Barbucia
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
             // TODO: Add your update logic here
+            posCarte = new Rectangle((int)spritePosition.X, (int)spritePosition.Y, textureCarte.Width, textureCarte.Height);
+            spriteOrigin = new Vector2(posCarte.Width / 2, posCarte.Height / 2);
 
+            if(Keyboard.GetState().IsKeyDown(Keys.Right)) angle = 0.3f;
+            if (Keyboard.GetState().IsKeyDown(Keys.Left)) angle = -0.3f;
+            
             base.Update(gameTime);
         }
 
-        protected  void RotateCarte()
-        {
-            Vector2 v1 = new Vector2(PosCarte.X, PosCarte.Y);
-            Vector2 v2 = new Vector2(PosCarte.X + PosCarte.Width,PosCarte.Y);
-            Vector2 v3 = new Vector2(PosCarte.X, PosCarte.Y + PosCarte.Height);
-            Vector2 v4 = new Vector2(PosCarte.X + PosCarte.Width, PosCarte.Y + PosCarte.Height);
-
-            v1 = Vector2.Transform(v1, Matrix.CreateRotationZ(MathHelper.ToRadians(30)));
-            v2 = Vector2.Transform(v2, Matrix.CreateRotationZ(MathHelper.ToRadians(30)));
-            v3 = Vector2.Transform(v3, Matrix.CreateRotationZ(MathHelper.ToRadians(30)));
-            v4 = Vector2.Transform(v4, Matrix.CreateRotationZ(MathHelper.ToRadians(30)));
-
-            PosCarte = new Rectangle(v1, v2, v3, v4);
-        }
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -100,8 +99,8 @@ namespace Barbucia
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             spriteBatch.Begin();
-            
-            spriteBatch.Draw(textureCarte,PosCarte, Color.White);
+
+            spriteBatch.Draw(textureCarte, spritePosition, null, Color.White, angle, spriteOrigin, 0.5f, SpriteEffects.None, 0);
             spriteBatch.End();
 
             // TODO: Add your drawing code here
